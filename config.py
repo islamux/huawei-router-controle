@@ -32,5 +32,6 @@ MENU_OPTIONS = {
     6: "Reboot Modem",
     7: "Bandwidth Control (Speed Limit)",
     8: "Show All Information",
+    9: "List All Devices Not Connected",
     0: "Exit"
 }

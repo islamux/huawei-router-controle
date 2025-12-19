@@ -160,3 +160,38 @@ def show_all_information(modem):
     display_connection_status(modem)
     display_connected_hosts(modem)
     display_recent_sms(modem)
+
+def display_disconnected_devices(modem):
+    """Display devices that are known but currently disconnected"""
+    modem._print_section_header("Disconnected Devices")
+
+    try:
+        modem.sync_device_list()
+
+        disconnected = modem.get_disconnected_devices()
+
+        if not disconnected:
+            modem._print_info("No disconnected devices found")
+            modem._print_info("This list shows devices that have previously connected but are now offline")
+            return
+
+        print(f"\n{Colors.OKBLUE}Found {len(disconnected)} disconnected device(s):{Colors.ENDC}\n")
+
+        for i, device in enumerate(disconnected, 1):
+            name = device.get('HostName', 'Unknown')
+            mac = device.get('MacAddress', 'Unknown')
+            ip = device.get('IpAddress', 'Unknown')
+            connection_type = device.get('ConnectionType', 'Unknown')
+            first_seen = device.get('first_seen', 'Unknown')
+            last_seen = device.get('last_seen', 'Unknown')
+
+            print(f"{Colors.HEADER}[{i}] {name}{Colors.ENDC}")
+            print(f"   MAC Address: {Colors.OKGREEN}{mac}{Colors.ENDC}")
+            print(f"   IP Address:  {Colors.OKGREEN}{ip}{Colors.ENDC}")
+            print(f"   Type:        {Colors.OKGREEN}{connection_type}{Colors.ENDC}")
+            print(f"   First Seen:  {first_seen}")
+            print(f"   Last Seen:   {last_seen}")
+            print()
+
+    except Exception as e:
+        modem._print_error(f"Could not fetch disconnected devices: {e}")

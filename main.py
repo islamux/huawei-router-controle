@@ -21,10 +21,11 @@ import argparse
 from modem import HuaweiModem
 from modem.menu import show_menu, get_user_choice, get_continue_choice
 from modem.display import (
-    display_device_info, display_connection_status, 
+    display_device_info, display_connection_status,
     display_connected_hosts, display_recent_sms,
     send_sms_message, reboot_modem,
-    display_bandwidth_control, show_all_information
+    display_bandwidth_control, show_all_information,
+    display_disconnected_devices
 )
 from config import MODEM_USER, MODEM_PASS, MODEM_HOST
 
@@ -106,7 +107,10 @@ def main():
         
         elif choice == 8:  # Show All
             show_all_information(modem)
-        
+
+        elif choice == 9:  # Disconnected Devices
+            display_disconnected_devices(modem)
+
         # Ask if user wants to continue
         if get_continue_choice():
             modem._print_info("Goodbye!")

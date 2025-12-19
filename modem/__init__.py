@@ -24,6 +24,7 @@ import huaweisms.api.device
 import huaweisms.api.monitoring
 import huaweisms.api.common
 from utils.colors import Colors
+from modem.device_tracker import sync_devices, get_disconnected_devices, get_known_devices
 
 class HuaweiModem:
     def __init__(self, username="admin", password="password", modem_host="192.168.8.1"):
@@ -148,3 +149,19 @@ class HuaweiModem:
     def _print_info(self, message):
         """Print an info message in blue"""
         print(f"{Colors.OKBLUE}ℹ {message}{Colors.ENDC}")
+
+    def sync_device_list(self):
+        """Sync known devices with currently connected hosts"""
+        current_hosts = self.get_connected_hosts()
+        sync_devices(current_hosts)
+
+    def get_disconnected_devices(self):
+        """
+        Get list of devices that are known but currently disconnected.
+        Returns list of device dictionaries.
+        """
+        return get_disconnected_devices()
+
+    def get_known_devices(self):
+        """Get all known devices that have ever connected"""
+        return get_known_devices()
