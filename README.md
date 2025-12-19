@@ -194,7 +194,30 @@ Contributions are welcome! The modular structure makes it easy to:
 
 ## 📝 License
 
-This project is for personal and educational use. Check the `huaweisms` package license for dependency terms.
+This project is licensed under the **GNU General Public License v3.0**.
+
+- **Full License Text**: See the [LICENSE](LICENSE) file
+- **GPL v3 Summary**: https://www.gnu.org/licenses/gpl-3.0.html
+- **Full GPL v3 Text**: https://www.gnu.org/licenses/gpl-3.0.txt
+
+### Key Points:
+
+✅ **Free Software**: You can use, modify, and distribute this software
+✅ **Open Source**: Source code is available and modifiable
+✅ **Copyleft**: Derivative works must also be open source
+✅ **No Warranty**: Software provided "as is" without warranty
+✅ **Share Alike**: Modifications must be licensed under GPL v3
+
+### Usage Rights:
+
+- **Permitted**: Use, modify, distribute, and share
+- **Required**: Include original license and copyright notices
+- **Required**: Make source code available for derivative works
+- **Prohibited**: Use in proprietary/closed-source software
+
+### Dependency Licensing:
+
+The `huaweisms` package may have its own license. Please check its licensing terms separately.
 
 ## 🎉 Enjoy!
 
