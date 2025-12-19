@@ -314,7 +314,7 @@ def show_all_information(modem):
 if __name__ == "__main__":
     # Configuration - adjust if necessary
     MODEM_USER = "admin"
-    MODEM_PASS = "islamux269733"
+    MODEM_PASS = "put-your-password-here"
     MODEM_HOST = "192.168.8.1"
 
     modem = HuaweiModem(MODEM_USER, MODEM_PASS, MODEM_HOST)

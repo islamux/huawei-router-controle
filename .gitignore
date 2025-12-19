@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env
+
+# IDE specific
+.idea/
+.vscode/
+*.swp
+
+# OS generated files
+.DS_Store
+.DS_Store?
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs and databases
+*.log
+*.sqlite
+
+# Build output
+build/
+dist/
+
+# Environment variables
+.env
+.env.local
+
+# Jupyter notebook
+.ipynb_checkpoints/
+
+# Python test and coverage
+.tox/
+.coverage
+*.cover
+*.py,cover
+nosetests.xml
+coverage.xml
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / profiling
+.testrepository/
+.pytest_cache/
+
+# MyPy
+.mypy_cache/
+
+# Various
+*.bak
+*.tmp
+*.backup
