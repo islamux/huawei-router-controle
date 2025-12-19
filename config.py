@@ -33,5 +33,8 @@ MENU_OPTIONS = {
     7: "Bandwidth Control (Speed Limit)",
     8: "Show All Information",
     9: "List All Devices Not Connected",
+    10: "View Blocked Devices",
+    11: "Block a Device",
+    12: "Unblock a Device",
     0: "Exit"
 }

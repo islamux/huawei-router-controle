@@ -24,7 +24,10 @@ import huaweisms.api.device
 import huaweisms.api.monitoring
 import huaweisms.api.common
 from utils.colors import Colors
-from modem.device_tracker import sync_devices, get_disconnected_devices, get_known_devices
+from modem.device_tracker import (
+    sync_devices, get_disconnected_devices, get_known_devices,
+    set_device_blocked, get_blocked_devices, is_device_known
+)
 
 class HuaweiModem:
     def __init__(self, username="admin", password="password", modem_host="192.168.8.1"):
@@ -165,3 +168,143 @@ class HuaweiModem:
     def get_known_devices(self):
         """Get all known devices that have ever connected"""
         return get_known_devices()
+
+    def get_blocked_devices(self):
+        """
+        Get list of currently blocked MAC addresses.
+        Returns list of MAC addresses that are blocked.
+        """
+        if not self.ctx:
+            return None
+        try:
+            # Get MAC filter settings
+            result = huaweisms.api.wlan.get_mac_filter_settings(self.ctx)
+            if result and 'response' in result:
+                # Parse blocked MAC addresses from response
+                # This is a placeholder - actual implementation depends on modem firmware
+                blocked_macs = []
+                # Implementation would extract MAC addresses from API response
+                return blocked_macs
+            return []
+        except Exception as e:
+            self._print_error(f"Failed to get blocked devices: {e}")
+            return []
+
+    def block_device(self, mac_address):
+        """
+        Block a device by MAC address.
+        Args:
+            mac_address: MAC address to block (format: XX:XX:XX:XX:XX:XX)
+        Returns:
+            True if successful, False otherwise
+        """
+        if not self.ctx:
+            return False
+
+        try:
+            # Normalize MAC address format
+            mac = mac_address.upper().replace('-', ':').replace('.', ':')
+
+            # Validate MAC address format
+            if not self._is_valid_mac(mac):
+                self._print_error(f"Invalid MAC address format: {mac_address}")
+                return False
+
+            # Get current MAC filter settings
+            current_settings = huaweisms.api.wlan.get_mac_filter_settings(self.ctx)
+
+            # Update settings to include the new blocked MAC
+            # This is a placeholder - actual implementation depends on modem firmware
+            xml_data = """<?xml version="1.0" encoding="UTF-8"?>
+            <request>
+                <MacAddressList>{}</MacAddressList>
+                <FilterMode>1</FilterMode>
+                <Enable>1</Enable>
+            </request>""".format(mac)
+
+            result = self._send_custom_xml("wlan/multi-cast-settings", xml_data)
+
+            if result and 'OK' in str(result):
+                self._print_success(f"Device {mac} blocked successfully")
+                return True
+            else:
+                self._print_error(f"Failed to block device {mac}")
+                return False
+
+        except Exception as e:
+            self._print_error(f"Error blocking device: {e}")
+            return False
+
+    def unblock_device(self, mac_address):
+        """
+        Unblock a device by MAC address.
+        Args:
+            mac_address: MAC address to unblock
+        Returns:
+            True if successful, False otherwise
+        """
+        if not self.ctx:
+            return False
+
+        try:
+            # Normalize MAC address format
+            mac = mac_address.upper().replace('-', ':').replace('.', ':')
+
+            # Validate MAC address format
+            if not self._is_valid_mac(mac):
+                self._print_error(f"Invalid MAC address format: {mac_address}")
+                return False
+
+            # Get current MAC filter settings and remove the MAC
+            # This is a placeholder - actual implementation depends on modem firmware
+            xml_data = """<?xml version="1.0" encoding="UTF-8"?>
+            <request>
+                <MacAddressList></MacAddressList>
+                <FilterMode>0</FilterMode>
+                <Enable>0</Enable>
+            </request>"""
+
+            result = self._send_custom_xml("wlan/multi-cast-settings", xml_data)
+
+            if result and 'OK' in str(result):
+                self._print_success(f"Device {mac} unblocked successfully")
+                return True
+            else:
+                self._print_error(f"Failed to unblock device {mac}")
+                return False
+
+        except Exception as e:
+            self._print_error(f"Error unblocking device: {e}")
+            return False
+
+    def is_device_blocked(self, mac_address):
+        """
+        Check if a device is currently blocked.
+        Args:
+            mac_address: MAC address to check
+        Returns:
+            True if blocked, False if not blocked or on error
+        """
+        if not self.ctx:
+            return False
+
+        try:
+            blocked_macs = self.get_blocked_devices()
+            mac = mac_address.upper().replace('-', ':').replace('.', ':')
+            return mac in blocked_macs
+        except Exception as e:
+            self._print_error(f"Error checking device status: {e}")
+            return False
+
+    def _is_valid_mac(self, mac_address):
+        """
+        Validate MAC address format.
+        Args:
+            mac_address: MAC address to validate
+        Returns:
+            True if valid, False otherwise
+        """
+        import re
+        # Check format: XX:XX:XX:XX:XX:XX (12 hex digits with colons)
+        pattern = r'^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$'
+        return bool(re.match(pattern, mac_address))

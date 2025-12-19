@@ -25,7 +25,8 @@ from modem.display import (
     display_connected_hosts, display_recent_sms,
     send_sms_message, reboot_modem,
     display_bandwidth_control, show_all_information,
-    display_disconnected_devices
+    display_disconnected_devices, display_blocked_devices,
+    display_block_device_menu, display_unblock_device_menu
 )
 from config import MODEM_USER, MODEM_PASS, MODEM_HOST
 
@@ -110,6 +111,15 @@ def main():
 
         elif choice == 9:  # Disconnected Devices
             display_disconnected_devices(modem)
+
+        elif choice == 10:  # Blocked Devices
+            display_blocked_devices(modem)
+
+        elif choice == 11:  # Block a Device
+            display_block_device_menu(modem)
+
+        elif choice == 12:  # Unblock a Device
+            display_unblock_device_menu(modem)
 
         # Ask if user wants to continue
         if get_continue_choice():

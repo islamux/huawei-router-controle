@@ -89,6 +89,9 @@ def sync_devices(current_hosts: Optional[Dict]) -> Dict:
                 existing_device['ConnectionType'] = host.get('ConnectionType', existing_device.get('ConnectionType', 'Unknown'))
                 existing_device['is_connected'] = True
                 existing_device['last_seen'] = current_time
+                # Ensure is_blocked field exists
+                if 'is_blocked' not in existing_device:
+                    existing_device['is_blocked'] = False
             else:
                 known_devices.append({
                     'MacAddress': mac,
@@ -96,6 +99,7 @@ def sync_devices(current_hosts: Optional[Dict]) -> Dict:
                     'IpAddress': host.get('IpAddress', 'Unknown'),
                     'ConnectionType': host.get('ConnectionType', 'Unknown'),
                     'is_connected': True,
+                    'is_blocked': False,
                     'first_seen': current_time,
                     'last_seen': current_time
                 })
@@ -105,6 +109,9 @@ def sync_devices(current_hosts: Optional[Dict]) -> Dict:
             if mac not in current_macs and device.get('is_connected', False):
                 device['is_connected'] = False
                 device['last_disconnected'] = current_time
+                # Ensure is_blocked field exists
+                if 'is_blocked' not in device:
+                    device['is_blocked'] = False
 
         data["devices"] = known_devices
         save_known_devices(data)
@@ -140,3 +147,57 @@ def clear_device_history() -> bool:
         "last_updated": datetime.now().isoformat()
     }
     return save_known_devices(data)
+
+def set_device_blocked(mac_address: str, blocked: bool = True) -> bool:
+    """
+    Mark a device as blocked or unblocked in the known devices list.
+    Args:
+        mac_address: MAC address of the device
+        blocked: True to block, False to unblock
+    Returns:
+        True if successful, False otherwise
+    """
+    data = load_known_devices()
+    devices = data.get("devices", [])
+
+    mac_upper = mac_address.upper()
+
+    for device in devices:
+        if device.get('MacAddress', '').upper() == mac_upper:
+            device['is_blocked'] = blocked
+            if blocked:
+                device['blocked_at'] = datetime.now().isoformat()
+            elif 'blocked_at' in device:
+                device.pop('blocked_at', None)
+            return save_known_devices(data)
+
+    return False
+
+def get_blocked_devices() -> List[Dict]:
+    """
+    Get list of devices that are currently blocked.
+    Returns list of device dictionaries
+    """
+    data = load_known_devices()
+    devices = data.get("devices", [])
+
+    blocked = [d for d in devices if d.get('is_blocked', False)]
+
+    blocked.sort(key=lambda x: x.get('blocked_at', x.get('last_seen', '')), reverse=True)
+
+    return blocked
+
+def is_device_known(mac_address: str) -> bool:
+    """
+    Check if a device is in the known devices list.
+    Args:
+        mac_address: MAC address to check
+    Returns:
+        True if device is known, False otherwise
+    """
+    data = load_known_devices()
+    devices = data.get("devices", [])
+
+    mac_upper = mac_address.upper()
+
+    return any(d.get('MacAddress', '').upper() == mac_upper for d in devices)

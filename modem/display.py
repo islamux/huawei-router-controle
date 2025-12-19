@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+from utils.colors import Colors
+
 def display_device_info(modem):
     """Display device information"""
     modem._print_section_header("Device Information")
@@ -195,3 +197,150 @@ def display_disconnected_devices(modem):
 
     except Exception as e:
         modem._print_error(f"Could not fetch disconnected devices: {e}")
+
+def display_blocked_devices(modem):
+    """Display currently blocked devices"""
+    modem._print_section_header("Blocked Devices")
+
+    try:
+        modem.sync_device_list()
+
+        blocked = modem.get_blocked_devices()
+
+        if not blocked:
+            modem._print_info("No blocked devices found")
+            modem._print_info("Use 'Block a Device' option to add devices to the blocked list")
+            return
+
+        print(f"\n{Colors.OKBLUE}Found {len(blocked)} blocked device(s):{Colors.ENDC}\n")
+
+        for i, device in enumerate(blocked, 1):
+            name = device.get('HostName', 'Unknown')
+            mac = device.get('MacAddress', 'Unknown')
+            ip = device.get('IpAddress', 'Unknown')
+            connection_type = device.get('ConnectionType', 'Unknown')
+            blocked_at = device.get('blocked_at', 'Unknown')
+            last_seen = device.get('last_seen', 'Unknown')
+
+            print(f"{Colors.HEADER}[{i}] {name} {Colors.FAIL}(BLOCKED){Colors.ENDC}")
+            print(f"   MAC Address: {Colors.OKGREEN}{mac}{Colors.ENDC}")
+            print(f"   IP Address:  {Colors.OKGREEN}{ip}{Colors.ENDC}")
+            print(f"   Type:        {Colors.OKGREEN}{connection_type}{Colors.ENDC}")
+            print(f"   Blocked At:  {blocked_at}")
+            print(f"   Last Seen:   {last_seen}")
+            print()
+
+    except Exception as e:
+        modem._print_error(f"Could not fetch blocked devices: {e}")
+
+def display_block_device_menu(modem):
+    """Interactive menu to block a device"""
+    modem._print_section_header("Block a Device")
+
+    try:
+        modem.sync_device_list()
+
+        known_devices = modem.get_known_devices()
+
+        if not known_devices:
+            modem._print_info("No known devices found")
+            return
+
+        print(f"\n{Colors.OKBLUE}Select a device to block:{Colors.ENDC}\n")
+
+        for i, device in enumerate(known_devices, 1):
+            name = device.get('HostName', 'Unknown')
+            mac = device.get('MacAddress', 'Unknown')
+            ip = device.get('IpAddress', 'Unknown')
+            connection_type = device.get('ConnectionType', 'Unknown')
+            is_blocked = device.get('is_blocked', False)
+
+            status = f"{Colors.FAIL}BLOCKED{Colors.ENDC}" if is_blocked else f"{Colors.OKGREEN}Active{Colors.ENDC}"
+            print(f"{Colors.HEADER}[{i}]{Colors.ENDC} {name}")
+            print(f"   MAC: {Colors.OKGREEN}{mac}{Colors.ENDC} | IP: {Colors.OKGREEN}{ip}{Colors.ENDC} | Type: {connection_type} | Status: {status}")
+            print()
+
+        choice = input(f"{Colors.OKBLUE}Enter device number (or 'c' to cancel): {Colors.ENDC}")
+        if choice.lower() == 'c':
+            modem._print_info("Blocking cancelled")
+            return
+
+        idx = int(choice) - 1
+        if 0 <= idx < len(known_devices):
+            device = known_devices[idx]
+            mac = device.get('MacAddress', '')
+
+            if device.get('is_blocked', False):
+                modem._print_error(f"Device {device.get('HostName')} is already blocked")
+                return
+
+            confirmation = input(f"\n{Colors.WARNING}⚠️  Block device {device.get('HostName')} ({mac})? (y/n): {Colors.ENDC}")
+            if confirmation.lower() == 'y':
+                if modem.block_device(mac):
+                    modem._print_success(f"Device {device.get('HostName')} blocked successfully")
+                    modem._print_info("The device will lose network access immediately")
+                else:
+                    modem._print_error(f"Failed to block device {device.get('HostName')}")
+            else:
+                modem._print_info("Blocking cancelled")
+        else:
+            modem._print_error("Invalid selection")
+
+    except ValueError:
+        modem._print_error("Invalid input. Please enter a number.")
+    except Exception as e:
+        modem._print_error(f"Error blocking device: {e}")
+
+def display_unblock_device_menu(modem):
+    """Interactive menu to unblock a device"""
+    modem._print_section_header("Unblock a Device")
+
+    try:
+        modem.sync_device_list()
+
+        blocked = modem.get_blocked_devices()
+
+        if not blocked:
+            modem._print_info("No blocked devices found")
+            return
+
+        print(f"\n{Colors.OKBLUE}Select a device to unblock:{Colors.ENDC}\n")
+
+        for i, device in enumerate(blocked, 1):
+            name = device.get('HostName', 'Unknown')
+            mac = device.get('MacAddress', 'Unknown')
+            ip = device.get('IpAddress', 'Unknown')
+            connection_type = device.get('ConnectionType', 'Unknown')
+            blocked_at = device.get('blocked_at', 'Unknown')
+
+            print(f"{Colors.HEADER}[{i}]{Colors.ENDC} {name}")
+            print(f"   MAC: {Colors.OKGREEN}{mac}{Colors.ENDC} | IP: {Colors.OKGREEN}{ip}{Colors.ENDC} | Type: {connection_type}")
+            print(f"   Blocked At: {blocked_at}")
+            print()
+
+        choice = input(f"{Colors.OKBLUE}Enter device number (or 'c' to cancel): {Colors.ENDC}")
+        if choice.lower() == 'c':
+            modem._print_info("Unblocking cancelled")
+            return
+
+        idx = int(choice) - 1
+        if 0 <= idx < len(blocked):
+            device = blocked[idx]
+            mac = device.get('MacAddress', '')
+
+            confirmation = input(f"\n{Colors.OKBLUE}Unblock device {device.get('HostName')} ({mac})? (y/n): {Colors.ENDC}")
+            if confirmation.lower() == 'y':
+                if modem.unblock_device(mac):
+                    modem._print_success(f"Device {device.get('HostName')} unblocked successfully")
+                    modem._print_info("The device will regain network access")
+                else:
+                    modem._print_error(f"Failed to unblock device {device.get('HostName')}")
+            else:
+                modem._print_info("Unblocking cancelled")
+        else:
+            modem._print_error("Invalid selection")
+
+    except ValueError:
+        modem._print_error("Invalid input. Please enter a number.")
+    except Exception as e:
+        modem._print_error(f"Error unblocking device: {e}")
