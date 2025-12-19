@@ -1,4 +1,23 @@
 {
-  "devices": [],
-  "last_updated": null
+  "devices": [
+    {
+      "MacAddress": "BC:93:07:5D:05:10",
+      "HostName": "S24-Ultra",
+      "IpAddress": "192.168.8.137;fe80::b1bf:a170:dd9c:80ce",
+      "ConnectionType": "Unknown",
+      "is_connected": true,
+      "first_seen": "2025-12-19T10:36:38.896840",
+      "last_seen": "2025-12-19T10:36:38.896840"
+    },
+    {
+      "MacAddress": "D0:C6:37:DC:FF:87",
+      "HostName": "islamux",
+      "IpAddress": "192.168.8.5;fe80::ef8c:68d6:ac17:7dd1",
+      "ConnectionType": "Unknown",
+      "is_connected": true,
+      "first_seen": "2025-12-19T10:36:38.896840",
+      "last_seen": "2025-12-19T10:36:38.896840"
+    }
+  ],
+  "last_updated": "2025-12-19T10:36:38.896891"
 }
