@@ -49,26 +49,41 @@ pip install huaweisms
 
 ## ⚙️ Step 4: Configure the Application
 
-Edit the configuration in the `huawei.py` file:
+The application now supports command-line arguments for better security. You can:
 
-```python
-# Configuration - adjust if necessary
-MODEM_USER = "admin"          # Your modem username
-MODEM_PASS = "your_password"  # Your modem password  
-MODEM_HOST = "192.168.8.1"    # Your modem IP address
+### Option 1: Use Command Line Arguments (Recommended)
+
+```bash
+python main.py --user admin --password your_password --host 192.168.8.1
 ```
 
-**Important Security Note:** For production use, consider:
-- Using environment variables instead of hardcoding credentials
-- Creating a configuration file that's not committed to Git
+### Option 2: Set Defaults in config.py
+
+Edit `config.py` for default values (password still required via command line):
+
+```python
+# Default configuration
+MODEM_USER = "admin"          # Default username
+MODEM_HOST = "192.168.8.1"    # Default host
+```
+
+**Important Security Note:** The password must be provided via command line for security. This prevents storing sensitive credentials in files or version control.
 - Using `.env` files with proper security
 
 ## 🚀 Step 5: Run the Application
 
 ```bash
-# Run the Huawei Connect tool
-python huawei.py
+# Run the Huawei Connect tool with password
+python main.py --password your_password
+
+# Or with all options:
+python main.py --user admin --password your_password --host 192.168.8.1
+
+# Short form:
+python main.py -u admin -p your_password -H 192.168.8.1
 ```
+
+**Note:** The password is now required via command line for better security.
 
 ## 🎮 Step 6: Using the Interactive Menu
 

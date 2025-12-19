@@ -2,6 +2,7 @@
 Main entry point for Huawei Connect application
 """
 
+import argparse
 from modem import HuaweiModem
 from modem.menu import show_menu, get_user_choice, get_continue_choice
 from modem.display import (
@@ -12,11 +13,42 @@ from modem.display import (
 )
 from config import MODEM_USER, MODEM_PASS, MODEM_HOST
 
+def parse_arguments():
+    """Parse command line arguments"""
+    parser = argparse.ArgumentParser(
+        description='Huawei Connect - Modem Management Tool',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog='''
+Examples:
+  python main.py --user admin --password mypassword
+  python main.py --host 192.168.8.1 --user admin --password mypassword
+  python main.py -u admin -p mypassword -h 192.168.8.1
+        '''
+    )
+    
+    parser.add_argument('-u', '--user', 
+                        help='Modem username (default: admin)',
+                        default=MODEM_USER)
+    parser.add_argument('-p', '--password',
+                        help='Modem password (required)',
+                        required=True)
+    parser.add_argument('-H', '--host',
+                        help='Modem host/IP address (default: 192.168.8.1)',
+                        default=MODEM_HOST)
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s 1.0.0',
+                        help='Show version information')
+    
+    return parser.parse_args()
+
 def main():
     """Main application entry point"""
     
+    # Parse command line arguments
+    args = parse_arguments()
+    
     # Create modem instance with configuration
-    modem = HuaweiModem(MODEM_USER, MODEM_PASS, MODEM_HOST)
+    modem = HuaweiModem(args.user, args.password, args.host)
     
     # Connect to modem
     if not modem.connect():

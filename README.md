@@ -37,16 +37,42 @@ source venv/bin/activate  # Linux/Mac
 # Install dependencies
 pip install huaweisms
 
-# Configure (edit config.py or use environment variables)
-# MODEM_USER="your_username"
-# MODEM_PASS="your_password"
-# MODEM_HOST="192.168.8.1"
+# Run the application with credentials
+python main.py --password your_password
 
-# Run the application
-python main.py
+# Or with all options:
+python main.py --user admin --password your_password --host 192.168.8.1
+
+# Short form:
+python main.py -u admin -p your_password -H 192.168.8.1
 ```
 
 ## 🎮 Features
+
+### Command Line Interface
+
+The application supports a comprehensive command-line interface:
+
+```bash
+# Show help
+python main.py --help
+
+# Show version
+python main.py --version
+
+# Run with credentials
+python main.py --password your_password
+
+# Run with all options
+python main.py --user admin --password your_password --host 192.168.8.1
+```
+
+**Arguments:**
+- `-u, --user` - Modem username (default: admin)
+- `-p, --password` - Modem password (required)
+- `-H, --host` - Modem host/IP (default: 192.168.8.1)
+- `--version` - Show version information
+- `--help` - Show help message
 
 ### Interactive Menu Options:
 
@@ -74,20 +100,42 @@ python main.py
 
 ## 📋 Configuration
 
-Edit `config.py` to set your modem credentials:
+### Command Line Arguments (Recommended)
 
-```python
-MODEM_USER = "admin"          # Your modem username
-MODEM_PASS = "your_password"  # Your modem password
-MODEM_HOST = "192.168.8.1"    # Your modem IP address
+The application now supports command-line arguments for secure credential passing:
+
+```bash
+# Basic usage (password required)
+python main.py --password your_password
+
+# All options
+python main.py --user admin --password your_password --host 192.168.8.1
+
+# Short form
+python main.py -u admin -p your_password -H 192.168.8.1
 ```
 
-**For better security**, use environment variables:
+### Configuration File
+
+Default values can be set in `config.py`:
+
+```python
+MODEM_USER = "admin"          # Default username
+MODEM_HOST = "192.168.8.1"    # Default host
+```
+
+**Note:** Password must be provided via command line for security.
+
+### Environment Variables
+
+For advanced usage, you can use environment variables:
 
 ```bash
 export MODEM_USER="your_username"
-export MODEM_PASS="your_password"
 export MODEM_HOST="192.168.8.1"
+
+# Then run (password still required via command line)
+python main.py --password your_password
 ```
 
 ## 🔧 Architecture

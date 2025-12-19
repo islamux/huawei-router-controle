@@ -4,7 +4,7 @@ Configuration module - Centralized configuration settings
 
 # Default configuration
 MODEM_USER = "admin"
-MODEM_PASS = "put-your-password-here"  # CHANGE THIS TO YOUR ACTUAL PASSWORD
+MODEM_PASS = None  # Password must be provided via command line for security
 MODEM_HOST = "192.168.8.1"
 
 # Menu options
